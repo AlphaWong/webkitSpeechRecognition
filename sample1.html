@@ -1,0 +1,80 @@
+<style>
+    #out {
+        width: 50em;
+        border-color: black;
+        border-style: solid;
+    }
+</style>
+<pre>Here is a sample to work with the html5 speech to voice api in the html5.
+<strong>1. Push button
+2. Allow the microphone access
+2. Wait for 2 seconds
+3. Speech </strong>
+</pre>
+<br>
+<button id="start">Start</button>
+<button id="stop">Stop</button>
+<br>
+<div id='out' contenteditable></div>
+
+<script>
+    var speechStr = '';
+    var display_node;
+    var is_stop = false;
+    var recognition = new webkitSpeechRecognition();
+
+    function init() {
+        recognition.lang = "zh-hk"; //set the region;default="en-GB"
+        recognition.onstart = function () {
+            window.console.log("Start");
+            setSelection('mic-animate.gif');
+        }
+        recognition.onresult = function (event) {
+            for (var i = event.resultIndex; i < event.results.length; ++i) {
+                if (event.results[i].isFinal) {
+                    speechStr += event.results[i][0].transcript;
+                } else {
+                    // Outputting the interim result to the text field and adding
+                    // an interim result marker - 0-length space
+                    speechStr += event.results[i][0].transcript;
+                }
+            }
+            console.log(display_node);
+            console.log(speechStr); //log the result
+            display_node.outerHTML = speechStr;
+            if (is_stop) {
+                recognition.stop();
+            }
+        }
+    }
+
+    function setSelection(src_) {
+        var selection = window.getSelection();
+        display_node = document.createElement('img');
+        display_node.src = src_;
+        display_node.classList.add('listening');
+        //            dom_img.src="./mic-animate.gif";
+        if (!selection.isCollapsed) {
+            selection.deleteFromDocument();
+        }
+        if (selection.rangeCount > 0 && selection.focusNode.id == 'out') {
+            selection.getRangeAt(0).insertNode(display_node);
+        } else {
+            document.querySelector("#out").appendChild(display_node);
+        }
+    }
+
+    function main() {
+        init();
+    }
+    
+    main();
+
+    document.querySelector("#stop").addEventListener('click', function () {
+        is_stop = true;
+    });
+
+    document.querySelector("#start").addEventListener('click', function () { //mapping the start button    
+        recognition.start();
+    });
+</script>
