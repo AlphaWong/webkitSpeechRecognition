@@ -17,6 +17,10 @@ function SpeechToTextObject() {
     //Speech API
     this.speech;
     //
+
+    //Original
+    this.original;
+    //
 }
 
 SpeechToTextObject.prototype.clearSlate = function () {
@@ -150,12 +154,12 @@ SpeechToTextObject.prototype.main = function () {
             for (var i = e.resultIndex; i < e.results.length; ++i) {
                 var val = e.results[i][0].transcript;
                 if (e.results[i].isFinal) {
-                    this.final_transcript += " " + val;
+                    me.final_transcript += " " + val;
                 } else {
                     interim_transcript += " " + val;
                 }
             }
-            me.output.innerHTML = me.format(me.capitalize(this.final_transcript)); //push the confirmed word to web page 
+            me.output.innerHTML = me.format(me.capitalize(me.final_transcript)); //push the confirmed word to web page 
             me.buffer.innerHTML = me.format(interim_transcript); //push the Candidate to web page
         };
     }
@@ -228,6 +232,16 @@ SpeechToTextObject.prototype.getLang = function (opt) { //Dictionary of the lang
     return langs[opt][1];
 }
 
+SpeechToTextObject.prototype.play = function () {
+    var utterance = new SpeechSynthesisUtterance(this.original.value);
+    speechUtteranceChunker(utterance, {
+        chunkLength: 120
+    }, function () {
+        //some code to execute when done
+        console.log('done');
+    });
+}
+
 SpeechToTextObject.prototype.mappingButton = function () {
     var me = this;
     //Mapping the Button to the Event Handler
@@ -243,8 +257,15 @@ SpeechToTextObject.prototype.mappingButton = function () {
         me.save();
     });
 
-    this.lang.addEventListener('change', function () {
-        me.
+    this.listen.addEventListener('click', function (e) {
+        me.play();
     });
+
+    this.lang.addEventListener('change', function (e) {
+        me.updateLang(e.target);
+    });
+
+
+
 
 }

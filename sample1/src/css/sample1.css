@@ -1,0 +1,25 @@
+.out_container {
+    width: 50em;
+    border-color: black;
+    border-style: solid;
+}
+
+textarea {
+    width: 63vw;
+}
+
+section {
+    border: solid;
+    padding: 5vh;
+}
+table, td, th {
+    border: 1px solid black;
+}
+.true{
+    background: green;
+    color: white;
+}
+.false{
+    background: red;
+    color: white;
+}

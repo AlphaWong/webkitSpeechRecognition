@@ -3,3 +3,12 @@
     border-color: black;
     border-style: solid;
 }
+
+textarea {
+    width: 63vw;
+}
+
+section {
+    border: solid;
+    padding: 5vh;
+}

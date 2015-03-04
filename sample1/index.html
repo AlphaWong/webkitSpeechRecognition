@@ -1,7 +1,7 @@
 <html>
 
 <head>
-    <link rel="stylesheet" type="text/css" href="./src/css/main.css">
+    <link rel="stylesheet" type="text/css" href="./src/css/sample1.css">
 </head>
 
 <body>
@@ -18,12 +18,16 @@
             <button id="rec">Start Dictation</button>
             <button id="clear">Clear</button>
             <button id="export">Export</button>
+            <button id="listen">Listen</button>
+            <button id="score">Score</button>
         </div>
+        <textarea id="original"></textarea>
         <div class="out_container">
-            &nbsp;<span id="output" contenteditable="false"></span>
+            <span id="output" contenteditable="false"></span>
             <span id="buffer"></span>
             <span id="warning"></span> <span></span>
         </div>
+        <div id='score_container'></div>
         <div class="platforms">
             Language Library:<span class="language"><select name="lang" id="lang" onchange="updateLang(this)"><optgroup label="English"><option value="6">Australia</option><option value="7">Canada</option><option value="8">India</option><option value="9">New Zealand</option><option value="10">South Africa</option><option value="11">United Kingdom</option><option value="12">United States</option></optgroup><optgroup label="--"><option value="0">Afrikaans</option><option value="1">Bahasa Indonesia</option><option value="2">Bahasa Melayu</option><option value="3">Català</option><option value="4">Čeština</option><option value="5">Deutsch</option><option value="33">Euskara</option><option value="34">Français</option><option value="35">Galego</option><option value="36">IsiZulu</option><option value="37">Íslenska</option><option value="40">Magyar</option><option value="41">Nederlands</option><option value="42">Polski</option><option value="45">Română</option><option value="46">Slovenčina</option><option value="47">Suomi</option><option value="48">Svenska</option><option value="49">Türkçe</option><option value="50">български</option><option value="51">Pусский</option><option value="52">Српски</option><option value="53">한국어</option><option value="58">日本語</option><option value="59">Lingua latīna</option></optgroup><optgroup label="Español"><option value="13">Argentina</option><option value="14">Bolivia</option><option value="15">Chile</option><option value="16">Colombia</option><option value="17">Costa Rica</option><option value="18">Ecuador</option><option value="19">El Salvador</option><option value="20">España</option><option value="21">Estados Unidos</option><option value="22">Guatemala</option><option value="23">Honduras</option><option value="24">México</option><option value="25">Nicaragua</option><option value="26">Panamá</option><option value="27">Paraguay</option><option value="28">Perú</option><option value="29">Puerto Rico</option><option value="30">Rep. Dominicana</option><option value="31">Uruguay</option><option value="32">Venezuela</option></optgroup><optgroup label="Italiano"><option value="38">Italiano Italia</option><option value="39">Italiano Svizzera</option></optgroup><optgroup label="Português"><option value="43">Brasil</option><option value="44">Portugal</option></optgroup><optgroup label="中文"><option value="54">普通话 (中国大陆)</option><option value="55">普通话 (香港)</option><option value="56">中文 (台灣)</option><option value="57">粵語 (香港)</option></optgroup></select></span> </div>
         </div>
@@ -31,13 +35,18 @@
     
 </body>
 <script src="./lib/filepicker.js"></script>
-<script src="./src/js/lib.js"></script>
+<script src="./lib/longTextSpeech.js"></script>
+<script src="./src/js/sample1.js"></script>
 <script>
     var speechToTextObj1=new SpeechToTextObject();
+    speechToTextObj1.original=document.getElementById('original');
     speechToTextObj1.rec=document.getElementById('rec');
     speechToTextObj1.clear=document.getElementById('clear');
     speechToTextObj1.export=document.getElementById('export');
+    speechToTextObj1.listen=document.getElementById('listen');
     speechToTextObj1.lang=document.getElementById('lang');
+    speechToTextObj1.score=document.getElementById('score');
+    speechToTextObj1.score_container=document.getElementById('score_container');
     speechToTextObj1.output=document.getElementById('output');
     speechToTextObj1.buffer=document.getElementById('buffer');
     speechToTextObj1.warning=document.getElementById('warning');
