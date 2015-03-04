@@ -1,0 +1,21 @@
+header {
+    text-align: center;
+}
+
+article>ul>li {
+    margin: 20px;
+    text-align: justify;
+    width: 90%;
+}
+
+article {
+    margin: 1%
+}
+
+body {
+    font-family: 'Noto Serif', serif;
+}
+
+.answer{
+    display: none;
+}

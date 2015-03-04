@@ -1,35 +1,58 @@
 //Clear All the information
-function clearSlate() {
-    if (working) { //If the voice to text api still running 
-        speech.stop(); //Stop the api.
+function SpeechToTextObject() {
+    var clear, working, speech, final_transcript = "";
+    //Button DOM
+    this.rec;
+    this.clear;
+    this.export;
+    this.lang;
+    //
+
+    //Display DOM
+    this.output;
+    this.buffer;
+    this.warning;
+    //
+
+    //Speech API
+    this.speech;
+    //
+}
+
+SpeechToTextObject.prototype.clearSlate = function () {
+    if (this.working) { //If the voice to text api still running 
+        this.speech.stop(); //Stop the api.
     }
-    document.getElementById("output").innerHTML = ""; //Clear the out put HTML Element
-    document.getElementById("buffer").innerHTML = ""; //Clear the Candidate words
-    final_transcript = "";
-    reset();
+    //document.getElementById('output').innerHTML = ""; //Clear the out put HTML Element
+    //document.getElementById("buffer").innerHTML = ""; //Clear the Candidate words
+    this.output.innerHTML = ""; //Clear the out put HTML Element
+    this.buffer.innerHTML = ""; //Clear the Candidate words
+    this.final_transcript = "";
+    this.reset();
 }
 
-function reset() {
-    working = false;
-    //    document.getElementById("status").style.display = "none";
-    document.getElementById("rec").innerHTML = "Start Dictation";
+SpeechToTextObject.prototype.reset = function (me) {
+    me.working = false;
+    //document.getElementById("status").style.display = "none";
+    //document.2getElementById("rec").innerHTML = "Start Dictation";
+    me.rec.innerHTML = "Start Dictation";
 }
 
-function action() {
-    if (working) {
-        speech.stop();
-        reset();
+SpeechToTextObject.prototype.action = function () {
+    if (this.working) {
+        this.speech.stop();
+        this.reset();
     } else {
-        speech.start();
-        working = true;
+        this.speech.start();
+        this.working = true;
         //        document.getElementById("status").style.display = "block";
-        document.getElementById("rec").innerHTML = "Stop Listening";
+        this.rec.innerHTML = "Stop Listening";
     }
 }
 
 //Offer Export Feature (Out source library)
-function save() {
-    var d = document.getElementById("output").innerHTML;
+SpeechToTextObject.prototype.save = function () {
+    var d = this.output.innerHTML;
     filepicker.setKey('AQuD5TxGmR7WT1pF3srxIz');
     filepicker.store(d, function (a) {
         filepicker['export'](a, {
@@ -39,101 +62,107 @@ function save() {
     });
 }
 
-function updateLang(sel) {// Swtich Language
+SpeechToTextObject.prototype.updateLang = function (sel) { // Swtich Language
     var value = sel.options[sel.selectedIndex].value;
-    speech.lang = getLang(value);
+    this.speech.lang = this.getLang(value);
     localStorage["language"] = value;
 }
 
-function format(s) {
+SpeechToTextObject.prototype.format = function (s) {
     return s.replace(/\n/g, '<br>');
 }
 
-function capitalize(s) {
+SpeechToTextObject.prototype.capitalize = function (s) {
     return s.replace(/\S/, function (m) {
         return m.toUpperCase();
     });
 }
 
-function initialize() {
-    speech = new webkitSpeechRecognition();//Create Recongnition Object
-    speech.continuous = true;//Support continuos speech !! it do not support any mobile client
-    speech.maxAlternatives = 5;//The size of the Candidate Array
-    speech.interimResults = true;//Show the Candidate Array
-    speech.lang = getLang(localStorage["language"]);//adopting library
-    speech.onend = reset;//Ending Handler
+SpeechToTextObject.prototype.initialize = function () {
+    var me = this;
+    this.mappingButton();
+    this.speech = new webkitSpeechRecognition(); //Create Recongnition Object
+    this.speech.continuous = true; //Support continuos speech !! it do not support any mobile client
+    this.speech.maxAlternatives = 5; //The size of the Candidate Array
+    this.speech.interimResults = true; //Show the Candidate Array
+    this.speech.lang = this.getLang(localStorage["language"]); //adopting library
+    this.speech.onend = this.reset(me); //Ending Handler
 }
 
-var clear, working, speech, final_transcript = "";
+SpeechToTextObject.prototype.main = function () {
+    var me = this;
+    if (typeof (webkitSpeechRecognition) !== 'function') { //If the client do not support a error message will pop-up
 
-if (typeof (webkitSpeechRecognition) !== 'function') {//If the client do not support a error message will pop-up
+        this.output.innerHTML = "We are sorry but Dictation requires the latest version of Google Chrome on your desktop.";
+        //document.getElementById("messages").style.display = "none";
 
-    document.getElementById("output").innerHTML = "We are sorry but Dictation requires the latest version of Google Chrome on your desktop.";
-    document.getElementById("messages").style.display = "none";
+    } else {
 
-} else {
-
-    if (typeof (localStorage["language"]) == 'undefined') {
-        localStorage["language"] = 12;
-    }
-
-    if (typeof (localStorage["transcript"]) == 'undefined') {
-        localStorage["transcript"] = "";
-    }
-
-    document.getElementById("output").innerHTML = localStorage["transcript"];
-    final_transcript = localStorage["transcript"];
-
-    setInterval(function () {
-        var text = document.getElementById("output").innerHTML;
-        if (text !== localStorage["transcript"]) {
-            localStorage["transcript"] = text;
+        if (typeof (localStorage["language"]) == 'undefined') {
+            localStorage["language"] = 12;
         }
-    }, 2000);
 
-    document.getElementById("lang").value = localStorage["language"];//Get the selected language library
-
-    //TODO: main flow
-    initialize();//Start the programe
-    reset();//Reset the program
-    //
-    
-    speech.onerror = function (e) {//API error handler
-        var msg = e.error + " error";
-        if (e.error === 'no-speech') {
-            msg = "No speech was detected. Please try again.";
-        } else if (e.error === 'audio-capture') {
-            msg = "Please ensure that a microphone is connected to your computer.";
-        } else if (e.error === 'not-allowed') {
-            msg = "The app cannot access your microphone. Please go to chrome://settings/contentExceptions#media-stream and allow Microphone access to this website.";
+        if (typeof (localStorage["transcript"]) == 'undefined') {
+            localStorage["transcript"] = "";
         }
-        document.getElementById("warning").innerHTML = "<p>" + msg + "</p>";
-        setTimeout(function () {
-            document.getElementById("warning").innerHTML = "";
-        }, 5000);
-    };
 
-    speech.onresult = function (e) {//retrieve the Candidate from the google api
-        var interim_transcript = '';
-        if (typeof (e.results) == 'undefined') {
-            reset();
-            return;
-        }
-        for (var i = e.resultIndex; i < e.results.length; ++i) {
-            var val = e.results[i][0].transcript;
-            if (e.results[i].isFinal) {
-                final_transcript += " " + val;
-            } else {
-                interim_transcript += " " + val;
+        this.output.innerHTML = localStorage["transcript"];
+        this.final_transcript = localStorage["transcript"];
+
+        setInterval(function () {
+            var text = this.output.innerHTML;
+            if (text !== localStorage["transcript"]) {
+                localStorage["transcript"] = text;
             }
-        }
-        document.getElementById("output").innerHTML = format(capitalize(final_transcript));//push the confirmed word to web page 
-        document.getElementById("buffer").innerHTML = format(interim_transcript);//push the Candidate to web page
-    };
+        }, 2000);
+
+        //document.getElementById("lang").value = localStorage["language"]; //Get the selected language library
+        this.lang.value = localStorage["language"]; //Get the selected language library
+
+        //TODO: main flow
+        this.initialize(); //Start the programe
+        this.reset(me); //Reset the program
+        //
+
+        this.speech.onerror = function (e) { //API error handler
+            var msg = e.error + " error";
+            if (e.error === 'no-speech') {
+                msg = "No speech was detected. Please try again.";
+            } else if (e.error === 'audio-capture') {
+                msg = "Please ensure that a microphone is connected to your computer.";
+            } else if (e.error === 'not-allowed') {
+                msg = "The app cannot access your microphone. Please go to chrome://settings/contentExceptions#media-stream and allow Microphone access to this website.";
+            }
+            //document.getElementById("warning").innerHTML = "<p>" + msg + "</p>";
+            me.warning.innerHTML = "<p>" + msg + "</p>";
+            setTimeout(function () {
+                //document.getElementById("warning").innerHTML = "";
+                me.warning.innerHTML = "";
+            }, 5000);
+        };
+
+        this.speech.onresult = function (e) { //retrieve the Candidate from the google api
+            var interim_transcript = '';
+            if (typeof (e.results) == 'undefined') {
+                this.reset();
+                return;
+            }
+            for (var i = e.resultIndex; i < e.results.length; ++i) {
+                var val = e.results[i][0].transcript;
+                if (e.results[i].isFinal) {
+                    this.final_transcript += " " + val;
+                } else {
+                    interim_transcript += " " + val;
+                }
+            }
+            me.output.innerHTML = me.format(me.capitalize(this.final_transcript)); //push the confirmed word to web page 
+            me.buffer.innerHTML = me.format(interim_transcript); //push the Candidate to web page
+        };
+    }
 }
 
-function getLang(opt) {//Dictionary of the language libaray
-    
+SpeechToTextObject.prototype.getLang = function (opt) { //Dictionary of the language libaray
+
     var langs = [
         ["Afrikaans", "af-za", "--", "en-us"],
         ["Bahasa Indonesia", "id-id", "--", "id-id"],
@@ -199,16 +228,23 @@ function getLang(opt) {//Dictionary of the language libaray
     return langs[opt][1];
 }
 
+SpeechToTextObject.prototype.mappingButton = function () {
+    var me = this;
+    //Mapping the Button to the Event Handler
+    this.rec.addEventListener('click', function () {
+        me.action();
+    });
 
-//Mapping the Button to the Event Handler
-document.querySelector('#rec').addEventListener('click', function () {
-    action();
-});
+    this.clear.addEventListener('click', function () {
+        me.clearSlate();
+    });
 
-document.querySelector('#clear').addEventListener('click', function () {
-    clearSlate();
-});
+    this.export.addEventListener('click', function () {
+        me.save();
+    });
 
-document.querySelector('#export').addEventListener('click', function () {
-    save();
-});
+    this.lang.addEventListener('change', function () {
+        me.
+    });
+
+}
