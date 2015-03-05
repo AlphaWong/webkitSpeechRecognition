@@ -16,6 +16,22 @@ body {
     font-family: 'Noto Serif', serif;
 }
 
-.answer{
+.answer {
     display: none;
+}
+
+table,
+td,
+th {
+    border: 1px solid black;
+}
+
+.true {
+    background: green;
+    color: white;
+}
+
+.false {
+    background: red;
+    color: white;
 }

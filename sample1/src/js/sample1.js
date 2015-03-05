@@ -73,7 +73,7 @@ SpeechToTextObject.prototype.save = function () {
 SpeechToTextObject.prototype.updateLang = function (sel) { // Swtich Language
     var value = sel.options[sel.selectedIndex].value;
     this.speech.lang = this.getLang(value);
-    localStorage[this.section_id+"-language"] = value;
+    localStorage[this.section_id + "-language"] = value;
 }
 
 SpeechToTextObject.prototype.format = function (s) {
@@ -93,7 +93,7 @@ SpeechToTextObject.prototype.initialize = function () {
     this.speech.continuous = true; //Support continuos speech !! it do not support any mobile client
     this.speech.maxAlternatives = 5; //The size of the Candidate Array
     this.speech.interimResults = true; //Show the Candidate Array
-    this.speech.lang = this.getLang(localStorage[me.section_id+"-language"]); //adopting library
+    this.speech.lang = this.getLang(localStorage[me.section_id + "-language"]); //adopting library
     this.speech.onend = this.reset(me); //Ending Handler
 }
 
@@ -106,26 +106,26 @@ SpeechToTextObject.prototype.main = function () {
 
     } else {
 
-        if (typeof (localStorage[me.section_id+"-language"]) == 'undefined') {
-            localStorage[me.section_id+"-language"] = 12;
+        if (typeof (localStorage[me.section_id + "-language"]) == 'undefined') {
+            localStorage[me.section_id + "-language"] = 12;
         }
 
-        if (typeof (localStorage[me.section_id+"-transcript"]) == 'undefined') {
-            localStorage[me.section_id+"-transcript"] = "";
+        if (typeof (localStorage[me.section_id + "-transcript"]) == 'undefined') {
+            localStorage[me.section_id + "-transcript"] = "";
         }
 
-        this.output.innerHTML = localStorage[me.section_id+"-transcript"];
-        this.final_transcript = localStorage[me.section_id+"-transcript"];
+        this.output.innerHTML = localStorage[me.section_id + "-transcript"];
+        this.final_transcript = localStorage[me.section_id + "-transcript"];
 
         setInterval(function () {
             var text = me.output.innerHTML;
-            if (text !== localStorage[me.section_id+"-transcript"]) {
-                localStorage[me.section_id+"-transcript"] = text;
+            if (text !== localStorage[me.section_id + "-transcript"]) {
+                localStorage[me.section_id + "-transcript"] = text;
             }
         }, 2000);
 
         //document.getElementById("lang").value = localStorage["language"]; //Get the selected language library
-        this.lang.value = localStorage[me.section_id+"-language"]; //Get the selected language library
+        this.lang.value = localStorage[me.section_id + "-language"]; //Get the selected language library
 
         //TODO: main flow
         this.initialize(); //Start the programe
@@ -262,6 +262,7 @@ SpeechToTextObject.prototype.compare = function () {
     var original_tr;
     var output_tr;
     var isCorrect_tr;
+    var index_tr;
     var score = document.createElement('var');
     var result_array = doCompare(original_sentence_array, output_array);
 
@@ -276,7 +277,11 @@ SpeechToTextObject.prototype.compare = function () {
         var table = document.createElement('table');
         var correct_array = [];
         for (var i = 0; i < a.length; ++i) {
+            if(a[i].original==''){
+                return;
+            }
             if (i % 10 == 0) {
+                index_tr = document.createElement('tr');
                 original_tr = document.createElement('tr');
                 output_tr = document.createElement('tr');
                 isCorrect_tr = document.createElement('tr');
@@ -292,10 +297,16 @@ SpeechToTextObject.prototype.compare = function () {
             var isCorrect_td = document.createElement('td');
             isCorrect_td.innerHTML = isCorrect_td.className = a[i].isCorrect;
             isCorrect_tr.appendChild(isCorrect_td);
+
+            var index_td = document.createElement('td');
+            index_td.innerHTML = (i + 1) + '. ';
+            index_tr.appendChild(index_td);
+
             if (a[i].isCorrect) {
                 correct_array.push(i);
             }
             if (i % 10 == 0) {
+                table.appendChild(index_tr);
                 table.appendChild(original_tr);
                 table.appendChild(output_tr);
                 table.appendChild(isCorrect_tr);
@@ -313,7 +324,7 @@ SpeechToTextObject.prototype.compare = function () {
         for (var i = 0; i < a.length; ++i) {
             var result = {};
             result.original = a[i];
-            if (output_array[i] == undefined) {
+            if (b[i] == undefined) {
                 result.output = '';
                 result.isCorrect = false;
             } else {

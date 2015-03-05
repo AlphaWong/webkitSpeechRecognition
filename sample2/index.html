@@ -1,0 +1,77 @@
+<html>
+
+<head>
+    <title>Sample 2</title>
+    <link rel="stylesheet" type="text/css" href="./src/css/sample2.css">
+    <link href='http://fonts.googleapis.com/css?family=Noto+Serif' rel='stylesheet' type='text/css'>
+    <link href='./lib/speech-input.css' rel='stylesheet' type='text/css'>
+</head>
+
+<body>
+    <header>
+        <h2>Universal Declaration of Human Rights</h2>
+        <h3>Adopted and proclaimed by General Assembly resolution 217 A (III) of 10 December 1948</h3>
+        <button id='play_button'>Play</button>
+        <button id='stop_button'>Stop</button>
+        <button id='score_button'>Score</button>
+        <div align="center" id='score_container'></div>
+    </header>
+    <aside>
+        <strong>Preamble</strong>
+    </aside>
+    <article>
+        <ul>
+            <li>
+                Whereas <span class='question'>recognition</span> of the inherent dignity and of the equal and inalienable rights of all members of the human family is the foundation of freedom,
+                <span class='question'>justice</span> and peace in the world,
+            </li>
+            <li>
+                Whereas disregard and <span class='question'>contempt</span> for human rights have resulted in barbarous acts which have outraged the <span class='question'>conscience</span> of mankind, and the advent of a world in which human beings shall enjoy freedom of speech and belief and freedom from fear and want has been proclaimed as the highest aspiration of the common people,
+            </li>
+            <li>
+                Whereas it is <span class='question'>essential</span>, if man is not to be compelled to have recourse, as a last resort, to rebellion against tyranny and oppression, that human rights should be protected by the rule of law,
+            </li>
+            <li>
+                Whereas it is essential to promote the development of friendly relations between nations,
+            </li>
+            <li>
+                Whereas the peoples of the United Nations have in the Charter reaffirmed their faith in <span class='question'>fundamental</span> human rights, in the dignity and worth of the human person and in the equal rights of men and women and have determined to promote social <span class='question'>progress</span> and better standards of life in larger freedom, Whereas Member States have pledged themselves to achieve, in <span class='question'>cooperation</span> with the United Nations, the promotion of universal respect for and observance of human rights and fundamental freedoms,
+            </li>
+            <li>
+                Whereas a common understanding of these <span class='question'>rights</span> and <span class='question'>freedoms</span> is of the greatest importance for the full realization of this pledge,
+            </li>
+            <li>
+                Now, therefore,
+            </li>
+            <li>
+                The General Assembly,
+            </li>
+            <li>
+                Proclaims this Universal Declaration of Human Rights as a common standard of <span class='question'>achievement</span> for all peoples and all nations, to the end that every individual and every organ of society, keeping this Declaration constantly in mind, shall strive by <span class='question'>teaching</span> and <span class='question'>education</span> to promote respect for these rights and freedoms and by progressive measures, national and <span class='question'>international</span>, to secure their universal and effective recognition and observance, both among the peoples of Member States themselves and among the peoples of territories under their <span class='question'>jurisdiction</span>.
+            </li>
+        </ul>
+    </article>
+    <footer>
+        Article Reference: <a href="http://www.hkhrm.org.hk/database/english/et001.html">http://www.hkhrm.org.hk/database/english/et001.html</a>
+        <br/> JS Library Reference: <a href="https://github.com/Daniel-Hug/speech-input">https://github.com/Daniel-Hug/speech-input</a>
+        <br/>
+    </footer>
+</body>
+<script src="lib/longTextSpeech.js"></script>
+<script>
+    var article = document.querySelector('article').textContent;
+</script>
+<script src="src/js/sample2.js"></script>
+<script>
+    var fillInTheBlankObj = new FillInTheBlank();
+    fillInTheBlankObj.question_node_array = document.querySelectorAll('.question');
+    fillInTheBlankObj.play_button = document.querySelector('#play_button');
+    fillInTheBlankObj.stop_button = document.querySelector('#stop_button');
+    fillInTheBlankObj.score_button = document.querySelector('#score_button');
+    fillInTheBlankObj.score_container = document.querySelector('#score_container');
+    fillInTheBlankObj.article = article;
+    fillInTheBlankObj.main();
+</script>
+<script src="./lib/speech-input.js"></script>
+
+</html>
