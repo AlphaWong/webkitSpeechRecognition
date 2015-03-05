@@ -1,6 +1,6 @@
 //Clear All the information
 function SpeechToTextObject() {
-    var clear, working, speech, final_transcript = "";
+    var clear, working, speech, final_transcript, section_id = "";
     //Button DOM
     this.rec;
     this.clear;
@@ -73,7 +73,7 @@ SpeechToTextObject.prototype.save = function () {
 SpeechToTextObject.prototype.updateLang = function (sel) { // Swtich Language
     var value = sel.options[sel.selectedIndex].value;
     this.speech.lang = this.getLang(value);
-    localStorage["language"] = value;
+    localStorage[this.section_id+"-language"] = value;
 }
 
 SpeechToTextObject.prototype.format = function (s) {
@@ -93,7 +93,7 @@ SpeechToTextObject.prototype.initialize = function () {
     this.speech.continuous = true; //Support continuos speech !! it do not support any mobile client
     this.speech.maxAlternatives = 5; //The size of the Candidate Array
     this.speech.interimResults = true; //Show the Candidate Array
-    this.speech.lang = this.getLang(localStorage["language"]); //adopting library
+    this.speech.lang = this.getLang(localStorage[me.section_id+"-language"]); //adopting library
     this.speech.onend = this.reset(me); //Ending Handler
 }
 
@@ -106,26 +106,26 @@ SpeechToTextObject.prototype.main = function () {
 
     } else {
 
-        if (typeof (localStorage["language"]) == 'undefined') {
-            localStorage["language"] = 12;
+        if (typeof (localStorage[me.section_id+"-language"]) == 'undefined') {
+            localStorage[me.section_id+"-language"] = 12;
         }
 
-        if (typeof (localStorage["transcript"]) == 'undefined') {
-            localStorage["transcript"] = "";
+        if (typeof (localStorage[me.section_id+"-transcript"]) == 'undefined') {
+            localStorage[me.section_id+"-transcript"] = "";
         }
 
-        this.output.innerHTML = localStorage["transcript"];
-        this.final_transcript = localStorage["transcript"];
+        this.output.innerHTML = localStorage[me.section_id+"-transcript"];
+        this.final_transcript = localStorage[me.section_id+"-transcript"];
 
         setInterval(function () {
-            var text = this.output.innerHTML;
-            if (text !== localStorage["transcript"]) {
-                localStorage["transcript"] = text;
+            var text = me.output.innerHTML;
+            if (text !== localStorage[me.section_id+"-transcript"]) {
+                localStorage[me.section_id+"-transcript"] = text;
             }
         }, 2000);
 
         //document.getElementById("lang").value = localStorage["language"]; //Get the selected language library
-        this.lang.value = localStorage["language"]; //Get the selected language library
+        this.lang.value = localStorage[me.section_id+"-language"]; //Get the selected language library
 
         //TODO: main flow
         this.initialize(); //Start the programe
@@ -156,6 +156,10 @@ SpeechToTextObject.prototype.main = function () {
                 return;
             }
             for (var i = e.resultIndex; i < e.results.length; ++i) {
+                var val = e.results[i][0].transcript;
+                var val = e.results[i][0].transcript;
+                var val = e.results[i][0].transcript;
+                var val = e.results[i][0].transcript;
                 var val = e.results[i][0].transcript;
                 if (e.results[i].isFinal) {
                     me.final_transcript += " " + val;
@@ -248,9 +252,8 @@ SpeechToTextObject.prototype.play = function () {
 
 SpeechToTextObject.prototype.compare = function () {
     var me = this;
-    var result_array = [];
     var original_sentence = this.original.value;
-    original_sentence = original_sentence.replace(/[^a-zA-Z ]/g, "");
+    original_sentence = original_sentence.replace(/[^a-zA-Z0-9 ]/g, "");
     var original_sentence_array = stringToArray(original_sentence);
     if (isEmpty(original_sentence_array)) {
         return;
@@ -259,55 +262,68 @@ SpeechToTextObject.prototype.compare = function () {
     var original_tr;
     var output_tr;
     var isCorrect_tr;
-    var correct = [];
-    var table = document.createElement('table');
     var score = document.createElement('var');
+    var result_array = doCompare(original_sentence_array, output_array);
 
-    for (var i = 0; i < original_sentence_array.length; ++i) {
-        var result = {};
-        result.original = original_sentence_array[i];
-        if (output_array[i] == undefined) {
-            result.output = '';
-            result.isCorrect = false;
-        } else {
-            result.output = output_array[i];
-            result.isCorrect = original_sentence_array[i].toUpperCase() == output_array[i].toUpperCase();
-        }
-        result_array.push(result);
-    }
-    //    console.log(result_array);
-    for (var i = 0; i < result_array.length; ++i) {
-        if (i % 10 == 0) {
-            original_tr = document.createElement('tr');
-            output_tr = document.createElement('tr');
-            isCorrect_tr = document.createElement('tr');
-        }
-        var original_td = document.createElement('td');
-        original_td.innerHTML = result_array[i].original;
-        original_tr.appendChild(original_td);
-
-        var output_td = document.createElement('td');
-        output_td.innerHTML = result_array[i].output;
-        output_tr.appendChild(output_td);
-
-        var isCorrect_td = document.createElement('td');
-        isCorrect_td.innerHTML = isCorrect_td.className = result_array[i].isCorrect;
-        isCorrect_tr.appendChild(isCorrect_td);
-        if (result_array[i].isCorrect) {
-            correct.push(correct);
-        }
-        if (i % 10 == 0) {
-            table.appendChild(output_tr);
-            table.appendChild(original_tr);
-            table.appendChild(isCorrect_tr);
-            table.appendChild(document.createElement('br'));
-        }
-    }
     me.score_container.innerHTML = '';
-    me.score_container.appendChild(table);
+    var table_and_score = doCreateScoreTableAndGetScore(result_array);
+    me.score_container.appendChild(table_and_score.table);
 
-    score.textContent ="Score:"+((correct.length / original_sentence_array.length)*100).toFixed(2);
+    score.textContent = "Score:" + ((table_and_score.score.length / original_sentence_array.length) * 100).toFixed(2);
     me.score_container.appendChild(score);
+
+    function doCreateScoreTableAndGetScore(a) {
+        var table = document.createElement('table');
+        var correct_array = [];
+        for (var i = 0; i < a.length; ++i) {
+            if (i % 10 == 0) {
+                original_tr = document.createElement('tr');
+                output_tr = document.createElement('tr');
+                isCorrect_tr = document.createElement('tr');
+            }
+            var original_td = document.createElement('td');
+            original_td.innerHTML = a[i].original;
+            original_tr.appendChild(original_td);
+
+            var output_td = document.createElement('td');
+            output_td.innerHTML = a[i].output;
+            output_tr.appendChild(output_td);
+
+            var isCorrect_td = document.createElement('td');
+            isCorrect_td.innerHTML = isCorrect_td.className = a[i].isCorrect;
+            isCorrect_tr.appendChild(isCorrect_td);
+            if (a[i].isCorrect) {
+                correct_array.push(i);
+            }
+            if (i % 10 == 0) {
+                table.appendChild(original_tr);
+                table.appendChild(output_tr);
+                table.appendChild(isCorrect_tr);
+                table.appendChild(document.createElement('br'));
+            }
+        }
+        return {
+            table: table,
+            score: correct_array
+        };
+    }
+
+    function doCompare(a, b) {
+        var result_array = [];
+        for (var i = 0; i < a.length; ++i) {
+            var result = {};
+            result.original = a[i];
+            if (output_array[i] == undefined) {
+                result.output = '';
+                result.isCorrect = false;
+            } else {
+                result.output = b[i];
+                result.isCorrect = a[i].toUpperCase() == b[i].toUpperCase();
+            }
+            result_array.push(result);
+        }
+        return result_array;
+    }
 
     function stringToArray(str) {
         return str.split(' ');
