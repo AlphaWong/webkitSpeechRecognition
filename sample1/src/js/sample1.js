@@ -329,7 +329,7 @@ SpeechToTextObject.prototype.compare = function () {
                 result.isCorrect = false;
             } else {
                 result.output = b[i];
-                result.isCorrect = a[i].toUpperCase() == b[i].toUpperCase();
+                result.isCorrect = a[i].toLowerCase() == b[i].toLowerCase();
             }
             result_array.push(result);
         }

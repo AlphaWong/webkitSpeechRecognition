@@ -66,7 +66,7 @@
 				}
 			}
 			finalTranscript = capitalize(finalTranscript);
-			inputEl.value = finalTranscript;
+			inputEl.value = finalTranscript.toLowerCase();
 			restartTimer();
 		};
 

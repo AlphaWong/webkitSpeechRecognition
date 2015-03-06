@@ -25,7 +25,9 @@ td,
 th {
     border: 1px solid black;
 }
-
+table{
+    
+}
 .true {
     background: green;
     color: white;

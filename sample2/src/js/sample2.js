@@ -126,7 +126,7 @@ FillInTheBlank.prototype.compare = function () {
                 result.isCorrect = false;
             } else {
                 result.output = b[i];
-                result.isCorrect = a[i].textContent.toUpperCase() == b[i].value.toUpperCase();
+                result.isCorrect = a[i].textContent.toLowerCase() == b[i].value.toLowerCase();
             }
             result_array.push(result);
         }
